@@ -31,20 +31,43 @@ order by sale_price desc;
 
 --6. Delete duplicate records from work, product_size, subject and image_link tables
 
-delete from [Paintings].[dbo].[work]
-where work_id not in (select distinct work_id from [Paintings].[dbo].[work]);
 
+WITH CTE AS (
+    SELECT 
+        work_id,
+        ROW_NUMBER() OVER (PARTITION BY work_id ORDER BY (SELECT NULL)) AS row_num
+    FROM [Paintings].[dbo].[work]
+)
+DELETE FROM CTE
+WHERE row_num > 1;
 
-delete from [Paintings].[dbo].[product_size]
-where size_id not in (select distinct size_id from [Paintings].[dbo].[product_size]);
+WITH CTE AS (
+    SELECT 
+        work_id,
+        ROW_NUMBER() OVER (PARTITION BY work_id ORDER BY (SELECT NULL)) AS row_num
+    FROM [Paintings].[dbo].[product_size]
+)
+DELETE FROM CTE
+WHERE row_num > 1;
 
+WITH CTE AS (
+    SELECT 
+        work_id,
+        ROW_NUMBER() OVER (PARTITION BY work_id ORDER BY (SELECT NULL)) AS row_num
+    FROM [Paintings].[dbo].[subject]
+)
+DELETE FROM CTE
+WHERE row_num > 1;
 
-delete from [Paintings].[dbo].[subject]
-where work_id not in (select distinct work_id from [Paintings].[dbo].[subject]);
+WITH CTE AS (
+    SELECT 
+        work_id,
+        ROW_NUMBER() OVER (PARTITION BY work_id ORDER BY (SELECT NULL)) AS row_num
+    FROM [Paintings].[dbo].[image_link]
+)
+DELETE FROM CTE
+WHERE row_num > 1;
 
-
-delete from [dbo].[image_link]
-where work_id not in (select distinct work_id from [dbo].[image_link]);
 
 --7. Identify the museums with invalid city information in the given dataset
 
